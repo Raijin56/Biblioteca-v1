@@ -1,11 +1,14 @@
 package org.iesalandalus.programacion.biblioteca.mvc.vista;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 import javax.naming.OperationNotSupportedException;
 
 import org.iesalandalus.programacion.biblioteca.mvc.controlador.Controlador;
 import org.iesalandalus.programacion.biblioteca.mvc.modelo.dominio.Alumno;
+import org.iesalandalus.programacion.biblioteca.mvc.modelo.dominio.Curso;
 import org.iesalandalus.programacion.biblioteca.mvc.modelo.dominio.Libro;
 import org.iesalandalus.programacion.biblioteca.mvc.modelo.dominio.Prestamo;
 
@@ -18,11 +21,15 @@ public class Vista {
 	}
 
 	public void setControlador(Controlador controlador) {
+		if (controlador == null) {
+			throw new NullPointerException("ERROR: El controlador no puede ser nulo.");
+		}
 		this.controlador = controlador;
 	}
 
 	public void comenzar() {
-		// Consola.mostrarCabecera("Gestión de los préstamos de la Biblioteca del IES Al-Ándalus");
+		// Consola.mostrarCabecera("Gestión de los préstamos de la Biblioteca del IES
+		// Al-Ándalus");
 		int ordinalOpcion;
 		do {
 			Consola.mostrarMenu();
@@ -70,8 +77,8 @@ public class Vista {
 
 	public void listarAlumnos() {
 		Consola.mostrarCabecera("Listado de Alumnos");
-		Alumno[] alumnos = controlador.getAlumnos();
-		if (alumnos[0] != null) {
+		List<Alumno> alumnos = controlador.getAlumnos();
+		if (!alumnos.isEmpty()) {
 			for (Alumno alumno : alumnos) {
 				if (alumno != null)
 					System.out.println(alumno);
@@ -115,8 +122,8 @@ public class Vista {
 
 	public void listarLibros() {
 		Consola.mostrarCabecera("Listado de Libros");
-		Libro[] libros = controlador.getLibros();
-		if (libros[0] != null) {
+		List<Libro> libros = controlador.getLibros();
+		if (!libros.isEmpty()) {
 			for (Libro libro : libros) {
 				if (libro != null)
 					System.out.println(libro);
@@ -174,8 +181,8 @@ public class Vista {
 
 	public void listarPrestamos() {
 		Consola.mostrarCabecera("Listado de Préstamos");
-		Prestamo[] prestamos = controlador.getPrestamos();
-		if (prestamos[0] != null) {
+		List<Prestamo> prestamos = controlador.getPrestamos();
+		if (!prestamos.isEmpty()) {
 			for (Prestamo prestamo : prestamos) {
 				if (prestamo != null)
 					System.out.println(prestamo);
@@ -189,8 +196,8 @@ public class Vista {
 		Consola.mostrarCabecera("Listado de Préstamos por Alumno");
 		try {
 			Alumno alumno = Consola.leerAlumnoFicticio();
-			Prestamo[] prestamos = controlador.getPrestamos(alumno);
-			if (prestamos[0] != null) {
+			List<Prestamo> prestamos = controlador.getPrestamos(alumno);
+			if (!prestamos.isEmpty()) {
 				for (Prestamo prestamo : prestamos) {
 					if (prestamo != null)
 						System.out.println(prestamo);
@@ -207,8 +214,8 @@ public class Vista {
 		Consola.mostrarCabecera("Listado de Préstamos por Libro");
 		try {
 			Libro libro = Consola.leerLibroFicticio();
-			Prestamo[] prestamos = controlador.getPrestamos(libro);
-			if (prestamos[0] != null) {
+			List<Prestamo> prestamos = controlador.getPrestamos(libro);
+			if (!prestamos.isEmpty()) {
 				for (Prestamo prestamo : prestamos) {
 					if (prestamo != null)
 						System.out.println(prestamo);
@@ -227,14 +234,32 @@ public class Vista {
 			LocalDate fechaListarPrestamos;
 			String mensajeFechaListarPrestamos = "Introduce la fecha para la que quieres listar los préstamos";
 			fechaListarPrestamos = Consola.leerFecha(mensajeFechaListarPrestamos);
-			Prestamo[] prestamos = controlador.getPrestamos(fechaListarPrestamos);
-			if (prestamos[0] != null) {
+			List<Prestamo> prestamos = controlador.getPrestamos(fechaListarPrestamos);
+			if (!prestamos.isEmpty()) {
 				for (Prestamo prestamo : prestamos) {
 					if (prestamo != null)
 						System.out.println(prestamo);
 				}
 			} else {
 				System.out.println("No hay préstamos que mostrar para dicha fecha.");
+			}
+		} catch (NullPointerException | IllegalArgumentException e) {
+			System.out.println(e.getMessage());
+		}
+	}
+
+	public void mostrarEstadisticaMensualPorCurso() {
+		Consola.mostrarCabecera("Estadísticas mensuales por curso");
+		try {
+			LocalDate fechaEstadisticaMensual;
+			String mensajeFechaEstadisticaMensual = "Introduce la fecha para la que quieres listar las estadísticas mensuales por curso";
+			fechaEstadisticaMensual = Consola.leerFecha(mensajeFechaEstadisticaMensual);
+			Map<Curso, Integer> estadisticaMensualPorCurso = controlador
+					.getEstadisticaMensualPorCurso(fechaEstadisticaMensual);
+			if (!estadisticaMensualPorCurso.isEmpty()) {
+				System.out.println(estadisticaMensualPorCurso);
+			} else {
+				System.out.println("No hay estadísticas a mostrar para dicha fecha.");
 			}
 		} catch (NullPointerException | IllegalArgumentException e) {
 			System.out.println(e.getMessage());
